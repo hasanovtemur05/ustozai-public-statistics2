@@ -25,8 +25,8 @@ http.interceptors.response.use(
   },
   (error) => {
     if (error?.response?.status === 401) {
-      localStorage.clear();
-      window.location.reload();
+      // localStorage.clear();
+      // window.location.reload();
     }
 
     throw error;
@@ -57,7 +57,7 @@ httpV2.interceptors.response.use(
   (error) => {
     if (error?.response?.status === 401) {
       localStorage.clear();
-      window.location.reload();
+      // window.location.reload();
     }
 
     throw error;

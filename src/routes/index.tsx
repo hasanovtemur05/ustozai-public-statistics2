@@ -9,22 +9,24 @@ import UsersHalfComplitedCoursesPage from 'pages/StatisticsHalfCompleteCourse/Pa
 
 export const Routes = () => {
   return (
-    <>
-      <DOMRoutes>
+    <div className='p-8'>
+      {/* <DOMRoutes>
         <Route
           path={'/'}
           element={
             <>
-              <UsersCertificatesPage />
-
-              <UsersHalfComplitedCoursesPage />
+            
             </>
           }
         />
-        {/* Agar foydalanuvchi ruxsat berilmagan sahifaga kirmoqchi bo'lsa, bosh sahifaga yo'naltirish */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </DOMRoutes>
+      </DOMRoutes> */}
+
+
+        <UsersCertificatesPage />
+
+              <UsersHalfComplitedCoursesPage />
       <Toaster />
-    </>
+    </div>
   );
 };
