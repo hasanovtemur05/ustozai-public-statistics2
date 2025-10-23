@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { IUserCertificate } from 'modules/user-certificate/types';
 import { calculateAge } from 'utils/calculateAge';
+import { formatDateTime } from 'utils/formatDateTime';
 import normalizeImgUrl from 'utils/normalizeFileUrl';
 
 interface IProps {
@@ -50,7 +51,11 @@ export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, cur
     header: 'Manzil',
     cell: ({ row }) => <>{row.original?.user?.address?.region + ', ' + row.original?.user?.address?.district} </>,
   },
-
+  {
+    accessorKey: 'createdAt',
+    header: 'Berilgan sana',
+    cell: ({ row }) => <>{formatDateTime(row.original.createdAt || '')} </>,
+  },
   {
     accessorKey: 'file',
     header: 'Sertifikat',

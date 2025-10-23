@@ -5,6 +5,7 @@ export const getData = (item?: IUserCertificate) => {
     file: item?.file ?? '',
     user: item?.user ? item?.user : null,
     course: item?.course ? item?.course : null,
+    createdAt: item?.createdAt ?? '',
   };
 };
 
