@@ -68,7 +68,7 @@ const UsersHalfComplitedCoursesPage = () => {
   }, [region]);
 
   return (
-    <div>
+    <div className='mt-6'>
       <h1 className="text-2xl font-bold text-center mb-2">Dars yarmiga kelgan talabalar</h1>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-3">

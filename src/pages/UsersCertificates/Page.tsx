@@ -11,6 +11,9 @@ import districtData from '../../db/districts.json';
 import SelectWithoutForm from 'components/fields/SelectWithoutForm';
 import http from 'services/api';
 import { Button } from 'components/ui/button';
+import { DateRange } from 'react-day-picker';
+import { getDefaultDateRange } from 'utils/defaultDateRange';
+import { DateRangePicker } from 'components/DataRangePicker';
 
 export type CustomSelectType = { name: string; id: string | number; disabled?: boolean; [key: string]: any };
 
@@ -26,9 +29,13 @@ const UsersCertificatesPage = () => {
   const [districts, setDistricts] = useState<CustomSelectType[]>([]);
   const [courses, setCourses] = useState<CustomSelectType[]>([]);
 
-  const { data: categories, isLoading, pagenationInfo } = useUserCertificateList(currentPage, course, region, district);
+  const [date, setDate] = useState<DateRange | undefined>(getDefaultDateRange());
+  const validDate = date?.from && date.to ? date : getDefaultDateRange();
+
+  const { data: categories, isLoading, pagenationInfo } = useUserCertificateList(currentPage, course, region, district, validDate);
   const { data: coursesList } = useCoursesList({ isEnabled: !!categories });
-console.log('categories', categories);
+
+  console.log('categories', categories);
   const getRowData = (info: IUserCertificate) => {
     setData(info);
   };
@@ -58,7 +65,6 @@ console.log('categories', categories);
       setDistricts(filtered);
     }
   }, [region]);
-  
 
   async function handleDownload(apiUrl: string) {
     setPanding(true);
@@ -102,6 +108,8 @@ console.log('categories', categories);
             onChange={(value) => setDistrict(value)}
             isTitleKey={true}
           />
+
+          <DateRangePicker date={date} setDate={setDate} />
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={() => handleDownload('users')}>Yuklab olish (userlar)</Button>
