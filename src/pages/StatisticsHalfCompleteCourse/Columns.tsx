@@ -1,4 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { Button } from 'components/ui/button';
 import { HalfCompleteCourse, IUserHalfCompleteCourse } from 'modules/statistic-half-complete-course/types';
 
 interface IProps {
@@ -6,9 +7,10 @@ interface IProps {
   setSheetOpen: (state: boolean) => void;
   setDialogOpen: (state: boolean) => void;
   currentPage: number;
+  handleShowChart: (user: IUserHalfCompleteCourse) => void;
 }
 
-export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, currentPage }: IProps): ColumnDef<any>[] => [
+export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, currentPage, handleShowChart }: IProps): ColumnDef<any>[] => [
   {
     accessorKey: 'amount',
     header: 'T/R',
@@ -46,6 +48,14 @@ export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, cur
           ))}
         </ul>
       );
+    },
+  },
+
+  {
+    accessorKey: 'courses',
+    header: 'Batafsil',
+    cell: ({ row }) => {
+      return <Button onClick={() => handleShowChart(row.original)}>Batafsil </Button>;
     },
   },
 ];

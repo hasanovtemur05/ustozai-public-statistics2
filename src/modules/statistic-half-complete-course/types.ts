@@ -1,9 +1,16 @@
 
-
 interface Address {
   region: string;
   district: string;
   neighborhood: string;
+}
+
+export interface ICourseLesson {
+  id: string;
+  title: string;
+  orderId: number;
+  link: string;
+  isCompleted: boolean;
 }
 
 export interface HalfCompleteCourse {
@@ -12,6 +19,7 @@ export interface HalfCompleteCourse {
   totalLessons: number;
   completedLessons: number;
   completionPercentage: number;
+  lessons: ICourseLesson[];
 }
 
 export interface IUserHalfCompleteCourse {

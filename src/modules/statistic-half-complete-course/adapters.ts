@@ -1,4 +1,3 @@
-import { first } from 'lodash';
 import { IUserHalfCompleteCourse } from './types';
 
 export const getData = (item?: IUserHalfCompleteCourse) => {
@@ -8,7 +7,7 @@ export const getData = (item?: IUserHalfCompleteCourse) => {
     lastname: item?.lastname ?? '',
     phone: item?.phone ?? '',
     email: item?.email ?? '',
-    address: item?.address ? `${item.address.region}, ${item.address.district}, ${item.address.neighborhood}` : '',
+    address: item?.address ? item.address : null,
     courses: item?.courses?.length
       ? item.courses.map((c) => ({
           id: c.id,
@@ -16,6 +15,7 @@ export const getData = (item?: IUserHalfCompleteCourse) => {
           totalLessons: c.totalLessons,
           completedLessons: c.completedLessons,
           completionPercentage: c.completionPercentage,
+          lessons: c.lessons,
         }))
       : [],
   };
