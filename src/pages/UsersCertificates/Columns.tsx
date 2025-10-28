@@ -69,7 +69,7 @@ export const createDataColumns = ({ currentPage, handleShowChart }: IProps): Col
     accessorKey: 'courses',
     header: 'Batafsil',
     cell: ({ row }) => {
-      return <Button onClick={() => handleShowChart(row.original)}>Takshirish </Button>;
+      return <Button onClick={() => handleShowChart(row.original)}>Tekshirish </Button>;
     },
   },
 ];
