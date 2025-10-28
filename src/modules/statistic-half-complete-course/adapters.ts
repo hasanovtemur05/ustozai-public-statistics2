@@ -16,6 +16,7 @@ export const getData = (item?: IUserHalfCompleteCourse) => {
           completedLessons: c.completedLessons,
           completionPercentage: c.completionPercentage,
           lessons: c.lessons,
+          exam: c.exam,
         }))
       : [],
   };

@@ -57,6 +57,8 @@ export default function VerifyCertificate({ user, onClose }: { user: IUserCertif
     );
   }
 
+  console.log(data, 'data');
+
   const successRate = data?.examStatistics ? ((data?.examStatistics?.submittedTests / 25) * 100).toFixed(1) : 0;
   const fileUrl = getMediaUrl(data?.file);
 
@@ -145,8 +147,8 @@ export default function VerifyCertificate({ user, onClose }: { user: IUserCertif
               </div>
 
               <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100">
-                <p className="text-xs text-gray-600 mb-1">Kurs ID</p>
-                <p className="text-sm font-mono text-gray-700">{data?.course?.id}</p>
+                <p className="text-xs text-gray-600 mb-1">Sertifikat ID</p>
+                <p className="text-sm font-mono text-gray-700">{user?.uniqueId}</p>
               </div>
             </div>
 
