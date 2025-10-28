@@ -51,7 +51,6 @@ const UsersHalfComplitedCoursesPage = () => {
 
   const { data: coursesList } = useCoursesList({ isEnabled: !!categories });
 
-  console.log(searchQuery, 'query');
   // Debounce effect for search
   useEffect(() => {
     const timer = setTimeout(() => {

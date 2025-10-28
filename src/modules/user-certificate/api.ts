@@ -24,8 +24,13 @@ export const GetDatasList = async (
     endDate,
     search: search?.trim() || undefined,
   };
-  
+
   return await http.get(`certificate/users`, {
     params: cleanEmptyStrings(params),
   });
+};
+
+
+export const GetVerifyCertificate = async (uniqueId: string) => {
+  return await http.get(`/certificate/verify/${uniqueId}`);
 };

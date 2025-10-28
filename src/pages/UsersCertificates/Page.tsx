@@ -17,6 +17,8 @@ import { DateRangePicker } from 'components/DataRangePicker';
 import CustomPagination from 'components/shared/pagination';
 import { Search } from 'lucide-react';
 import { Input } from 'components/ui/input';
+import { useSearchParams } from 'react-router-dom';
+import VerifyCertificate from 'components/charts/VarifyCertificate';
 
 export type CustomSelectType = { name: string; id: string | number; disabled?: boolean; [key: string]: any };
 
@@ -29,8 +31,13 @@ const UsersCertificatesPage = () => {
   const [course, setCourse] = useState('');
   const [region, setRegion] = useState('');
   const [district, setDistrict] = useState('');
+  const [selectedUser, setSelectedUser] = useState<IUserCertificate>();
+
   const [districts, setDistricts] = useState<CustomSelectType[]>([]);
   const [courses, setCourses] = useState<CustomSelectType[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const uniqueId = searchParams.get('uniqueId');
 
   // Search states
   const [searchInput, setSearchInput] = useState('');
@@ -61,16 +68,18 @@ const UsersCertificatesPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const getRowData = (info: IUserCertificate) => {
-    setData(info);
+  const handleShowChart = (user: IUserCertificate) => {
+    if (user) {
+      setSearchParams({
+        uniqueId: user.uniqueId + '',
+      });
+      setSelectedUser(user);
+    }
   };
 
-  // demo
   const columns = createDataColumns({
-    getRowData,
-    setDialogOpen,
-    setSheetOpen,
     currentPage,
+    handleShowChart,
   });
 
   useEffect(() => {
@@ -158,6 +167,18 @@ const UsersCertificatesPage = () => {
             itemsPerPageOptions={[10, 20, 50, 100]}
           />
         </>
+      )}
+
+      {uniqueId && selectedUser && (
+        <div>
+          <VerifyCertificate
+            user={selectedUser}
+            onClose={() => {
+              setSearchParams({});
+              setSelectedUser(undefined);
+            }}
+          />
+        </div>
       )}
     </div>
   );

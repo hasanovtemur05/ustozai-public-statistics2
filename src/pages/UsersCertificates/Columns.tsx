@@ -1,17 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { Button } from 'components/ui/button';
 import { IUserCertificate } from 'modules/user-certificate/types';
 import { calculateAge } from 'utils/calculateAge';
 import { formatDateTime } from 'utils/formatDateTime';
 import normalizeImgUrl from 'utils/normalizeFileUrl';
 
 interface IProps {
-  getRowData: (notification: IUserCertificate) => void;
-  setSheetOpen: (state: boolean) => void;
-  setDialogOpen: (state: boolean) => void;
   currentPage: number;
+  handleShowChart: (user: IUserCertificate) => void;
 }
 
-export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, currentPage }: IProps): ColumnDef<IUserCertificate>[] => [
+export const createDataColumns = ({ currentPage, handleShowChart }: IProps): ColumnDef<IUserCertificate>[] => [
   {
     accessorKey: 'amount',
     header: 'T/R',
@@ -64,5 +63,13 @@ export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, cur
         File
       </a>
     ),
+  },
+
+  {
+    accessorKey: 'courses',
+    header: 'Batafsil',
+    cell: ({ row }) => {
+      return <Button onClick={() => handleShowChart(row.original)}>Takshirish </Button>;
+    },
   },
 ];
