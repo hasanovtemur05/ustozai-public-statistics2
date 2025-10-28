@@ -1,12 +1,12 @@
-import { DateRange } from "react-day-picker";
+import { DateRange } from 'react-day-picker';
 
-export   const getDefaultDateRange = (): DateRange => {
-    const today = new Date();
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+export const getDefaultDateRange = (): DateRange => {
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 12);
 
-    return {
-      from: oneMonthAgo,
-      to: today,
-    };
+  return {
+    from: undefined,
+    to: undefined,
   };
+};

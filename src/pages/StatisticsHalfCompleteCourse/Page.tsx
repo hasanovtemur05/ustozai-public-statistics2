@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { DataTable } from 'components/DataTable';
 import Loader from 'components/Loader';
 import { createDataColumns } from './Columns';
-import { Pagination } from 'components/Pagination';
 import { useCoursesList } from 'modules/courses/hooks/useCoursesList';
 import regions from '../../db/regions.json';
 import districtData from '../../db/districts.json';
@@ -14,6 +13,10 @@ import { getDefaultDateRange } from 'utils/defaultDateRange';
 import { DateRangePicker } from 'components/DataRangePicker';
 import { useSearchParams } from 'react-router-dom';
 import UsersProgress from 'components/charts/UsersProgress';
+import CustomPagination from 'components/shared/pagination';
+import { Input } from 'components/ui/input';
+import { Search } from 'lucide-react';
+import { Button } from 'components/ui/button';
 
 export type CustomSelectType = { name: string; id: string | number; disabled?: boolean; [key: string]: any };
 
@@ -22,6 +25,8 @@ const UsersHalfComplitedCoursesPage = () => {
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [data, setData] = useState<IUserHalfCompleteCourse>();
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const [course, setCourse] = useState('');
   const [region, setRegion] = useState('');
   const [district, setDistrict] = useState('');
@@ -31,11 +36,31 @@ const UsersHalfComplitedCoursesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const userId = searchParams.get('userId');
 
+  // Search states
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [date, setDate] = useState<DateRange | undefined>(getDefaultDateRange());
   const validDate = date?.from && date.to ? date : getDefaultDateRange();
 
-  const { data: categories, isLoading, pagenationInfo } = useUserByHalfCourse(currentPage, course, region, district, validDate);
+  const {
+    data: categories,
+    isLoading,
+    pagenationInfo,
+  } = useUserByHalfCourse(currentPage, pageSize, course, region, district, validDate, searchQuery);
+
   const { data: coursesList } = useCoursesList({ isEnabled: !!categories });
+
+  console.log(searchQuery, 'query');
+  // Debounce effect for search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const getRowData = (info: IUserHalfCompleteCourse) => {
     setData(info);
@@ -47,10 +72,9 @@ const UsersHalfComplitedCoursesPage = () => {
         userId: user.id,
       });
       setSelectedUser(user);
-      // setSheetOpen(true);
     }
   };
-  // demo
+
   const columns = createDataColumns({
     getRowData,
     setDialogOpen,
@@ -77,38 +101,102 @@ const UsersHalfComplitedCoursesPage = () => {
     }
   }, [region]);
 
-  useEffect(() => {
-    if (selectedUser) {
-      // const filtered = districtData.filter((c) => c.region_name === region);
-      // setDistricts(filtered);
-    }
-  }, [selectedUser]);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  console.log('selectedUser', selectedUser);
+  const handleSearch = (value: string) => {
+    setSearchInput(value);
+  };
+
+  const clearFilters = () => {
+    setSearchInput('');
+    setSearchQuery('');
+    setCourse('');
+    setRegion('');
+    setDistrict('');
+    setDate(getDefaultDateRange());
+    setCurrentPage(1);
+  };
 
   return (
     <div className="mt-6">
-      <h1 className="text-2xl font-bold text-center mb-2">Dars yarmiga kelgan talabalar</h1>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3">
-          <h2>Jami {pagenationInfo?.count || 0} ta </h2>
-          <SelectWithoutForm data={courses} placeholder="Kursni  bo'yicha..." onChange={(value) => setCourse(value)} />
-          <SelectWithoutForm data={regions} placeholder="Viloyatlar  bo'yicha..." onChange={(value) => setRegion(value)} isTitleKey={true} />
+      <h1 className="text-2xl font-bold text-center mb-6">Dars yarmiga kelgan talabalar</h1>
+
+      <div className="flex flex-col gap-4 mb-4">
+        {/* Filters */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <h2 className="text-lg font-semibold">Jami {pagenationInfo?.count || 0} ta</h2>
+          <SelectWithoutForm
+            data={courses}
+            placeholder="Kursni bo'yicha..."
+            onChange={(value) => {
+              setCourse(value);
+              setCurrentPage(1);
+            }}
+          />
+          <SelectWithoutForm
+            data={regions}
+            placeholder="Viloyatlar bo'yicha..."
+            onChange={(value) => {
+              setRegion(value);
+              setDistrict(''); // Viloyat o'zgarganda tumanni tozalash
+              setCurrentPage(1);
+            }}
+            isTitleKey={true}
+          />
           <SelectWithoutForm
             data={districts}
             placeholder="Tuman/shahar bo'yicha..."
-            onChange={(value) => setDistrict(value)}
+            onChange={(value) => {
+              setDistrict(value);
+              setCurrentPage(1);
+            }}
             isTitleKey={true}
           />
-          <DateRangePicker date={date} setDate={setDate} />
+          <DateRangePicker
+            date={date}
+            setDate={(newDate) => {
+              setDate(newDate);
+              setCurrentPage(1);
+            }}
+          />
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Ism, familiya yoki telefon bo'yicha qidirish..."
+              value={searchInput}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10 pr-4"
+            />
+          </div>
+          {/* Clear filters button */}
+          {(searchInput || course || region || district) && (
+            <Button onClick={clearFilters} variant={'destructive'}>
+              Tozalash
+            </Button>
+          )}
         </div>
       </div>
+
       {isLoading ? (
         <Loader />
       ) : (
         <>
           <DataTable columns={columns} data={categories} />
-          <Pagination className="justify-end mt-3" currentPage={currentPage} setCurrentPage={setCurrentPage} paginationInfo={pagenationInfo} />
+          <CustomPagination
+            currentPage={currentPage}
+            totalItems={pagenationInfo.count}
+            itemsPerPage={pageSize}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={(newSize) => {
+              setPageSize(newSize);
+              setCurrentPage(1);
+            }}
+            itemsPerPageOptions={[10, 20, 50, 100]}
+          />
         </>
       )}
 

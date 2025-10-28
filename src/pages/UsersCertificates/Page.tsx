@@ -14,28 +14,53 @@ import { Button } from 'components/ui/button';
 import { DateRange } from 'react-day-picker';
 import { getDefaultDateRange } from 'utils/defaultDateRange';
 import { DateRangePicker } from 'components/DataRangePicker';
+import CustomPagination from 'components/shared/pagination';
+import { Search } from 'lucide-react';
+import { Input } from 'components/ui/input';
 
 export type CustomSelectType = { name: string; id: string | number; disabled?: boolean; [key: string]: any };
 
 const UsersCertificatesPage = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isSheetOpen, setSheetOpen] = useState(false);
-  const [isPanding, setPanding] = useState(false);
   const [data, setData] = useState<IUserCertificate>();
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [course, setCourse] = useState('');
   const [region, setRegion] = useState('');
   const [district, setDistrict] = useState('');
   const [districts, setDistricts] = useState<CustomSelectType[]>([]);
   const [courses, setCourses] = useState<CustomSelectType[]>([]);
 
+  // Search states
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [date, setDate] = useState<DateRange | undefined>(getDefaultDateRange());
   const validDate = date?.from && date.to ? date : getDefaultDateRange();
 
-  const { data: categories, isLoading, pagenationInfo } = useUserCertificateList(currentPage, course, region, district, validDate);
+  const {
+    data: categories,
+    isLoading,
+    pagenationInfo,
+  } = useUserCertificateList(currentPage, pageSize, course, region, district, validDate, searchQuery);
   const { data: coursesList } = useCoursesList({ isEnabled: !!categories });
 
-  console.log('categories', categories);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const getRowData = (info: IUserCertificate) => {
     setData(info);
   };
@@ -66,37 +91,23 @@ const UsersCertificatesPage = () => {
     }
   }, [region]);
 
-  async function handleDownload(apiUrl: string) {
-    setPanding(true);
-    try {
-      const response = await http.get(`/statistics/certificate/by/${apiUrl}`, { responseType: 'blob' });
+  const handleSearch = (value: string) => {
+    setSearchInput(value);
+  };
 
-      const blob = new Blob([response.data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      const url = window.URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = url;
-
-      const date = new Date().toISOString().split('T')[0];
-
-      link.setAttribute('download', `users-data-${date}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Aniqlanmagan xatolik yuz berdi!');
-    } finally {
-      setPanding(false);
-    }
-  }
+  const clearFilters = () => {
+    setSearchInput('');
+    setSearchQuery('');
+    setCourse('');
+    setRegion('');
+    setDistrict('');
+    setDate(getDefaultDateRange());
+    setCurrentPage(1);
+  };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center mb-2">Sertifikat olgan talabalar</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Sertifikat olgan talabalar</h1>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-3">
           <h2>Jami {pagenationInfo?.count || 0} ta </h2>
@@ -110,10 +121,23 @@ const UsersCertificatesPage = () => {
           />
 
           <DateRangePicker date={date} setDate={setDate} />
-        </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={() => handleDownload('users')}>Yuklab olish (userlar)</Button>
-          <Button onClick={() => handleDownload('region')}>Yuklab olish (viloyatlar)</Button>
+
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Ism, familiya yoki telefon bo'yicha qidirish..."
+              value={searchInput}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10 pr-4"
+            />
+          </div>
+          {/* Clear filters button */}
+          {(searchInput || course || region || district) && (
+            <Button onClick={clearFilters} variant={'destructive'}>
+              Tozalash
+            </Button>
+          )}
         </div>
       </div>
       {isLoading ? (
@@ -121,7 +145,18 @@ const UsersCertificatesPage = () => {
       ) : (
         <>
           <DataTable columns={columns} data={categories} />
-          <Pagination className="justify-end mt-3" currentPage={currentPage} setCurrentPage={setCurrentPage} paginationInfo={pagenationInfo} />
+
+          <CustomPagination
+            currentPage={currentPage}
+            totalItems={pagenationInfo.count}
+            itemsPerPage={pageSize}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={(newSize) => {
+              setPageSize(newSize);
+              setCurrentPage(1);
+            }}
+            itemsPerPageOptions={[10, 20, 50, 100]}
+          />
         </>
       )}
     </div>

@@ -5,7 +5,15 @@ import { getDatasList } from '../adapters';
 import { GetDatasList } from '../api';
 import { DateRange } from 'react-day-picker';
 
-export const useUserByHalfCourse = (currentPage: number, courseId?: string, region?: string, district?: string, date?: DateRange) => {
+export const useUserByHalfCourse = (
+  currentPage: number,
+  pageSize: number,
+  courseId?: string,
+  region?: string,
+  district?: string,
+  date?: DateRange,
+  search?: string
+) => {
   const initialData = {
     data: getDatasList(),
     pagenationInfo: {
@@ -16,8 +24,8 @@ export const useUserByHalfCourse = (currentPage: number, courseId?: string, regi
     },
   };
   const { data = initialData, ...args } = useQuery({
-    queryKey: ['user_helf_course', currentPage, courseId, region, district, date],
-    queryFn: () => GetDatasList(currentPage, courseId, region, district, date),
+    queryKey: ['user_helf_course', currentPage, pageSize, courseId, region, district, date, search],
+    queryFn: () => GetDatasList(currentPage, pageSize, courseId, region, district, date, search),
     select: (data) => ({
       data: getDatasList(get(data, 'data.data.data')),
       pagenationInfo: get(data, 'data.data.meta.pagination'),
