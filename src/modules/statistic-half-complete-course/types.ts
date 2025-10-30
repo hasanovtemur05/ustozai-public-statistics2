@@ -36,7 +36,7 @@ export interface ICourseLesson {
 }
 
 export interface HalfCompleteCourse {
-  id: string;
+  courseId: string;
   title: string;
   totalLessons: number;
   completedLessons: number;
@@ -50,13 +50,76 @@ export interface HalfCompleteCourse {
     questions: IQuiz[];
   };
 }
+export interface HalfCompleteCourseV2 {
+  courseId: string;
+  courseTitle: string;
+  percentage: number;
+}
 
 export interface IUserHalfCompleteCourse {
-  id: string;
+  userId: string;
   firstname: string;
   lastname: string;
   phone: string;
   email: string;
   address: Address;
-  courses: HalfCompleteCourse[];
+  courses: HalfCompleteCourseV2[];
+}
+
+// Detailed user course information structure
+export interface IExamQuestion {
+  id: string;
+  question: string;
+  options: {
+    id: string;
+    link?: string;
+    value: string;
+    isCorrect: boolean;
+    isSelected: boolean;
+  }[];
+  isUserCorrect: boolean;
+}
+
+export interface IExamSection {
+  totalQuestions: number;
+  correctAnswers: number;
+  degree: string;
+  questions: IExamQuestion[];
+}
+
+export interface ILessonQuiz {
+  id: string;
+  question: string;
+  options: {
+    id: string;
+    link?: string;
+    value: string;
+    isCorrect: boolean;
+    isSelected: boolean;
+  }[];
+  isUserCorrect: boolean;
+}
+
+export interface IDetailedLesson {
+  id: string;
+  title: string;
+  orderId: number;
+  link: string;
+  isCompleted: boolean;
+  quizzes: ILessonQuiz[];
+}
+
+export interface IUserCourseDetail {
+  userId: string;
+  firstname: string;
+  lastname: string;
+  phone: string;
+  email: string;
+  courseId: string;
+  courseTitle: string;
+  totalLessons: number;
+  completedLessons: number;
+  completionPercentage: number;
+  lessons: IDetailedLesson[];
+  exam: IExamSection;
 }

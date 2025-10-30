@@ -16,12 +16,7 @@ export const useUserByHalfCourse = (
 ) => {
   const initialData = {
     data: getDatasList(),
-    pagenationInfo: {
-      total_pages: 0,
-      prev_page: 0,
-      next_page: 0,
-      current_page: 1,
-    },
+    pagenationInfo: null,
   };
   const { data = initialData, ...args } = useQuery({
     queryKey: ['user_helf_course', currentPage, pageSize, courseId, region, district, date, search],

@@ -118,7 +118,7 @@ const UsersCertificatesPage = () => {
     <div>
       <h1 className="text-2xl font-bold text-center mb-6">Sertifikat olgan talabalar</h1>
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <h2>Jami {pagenationInfo?.count || 0} ta </h2>
           <SelectWithoutForm data={courses} placeholder="Kursni  bo'yicha..." onChange={(value) => setCourse(value)} />
           <SelectWithoutForm data={regions} placeholder="Viloyatlar  bo'yicha..." onChange={(value) => setRegion(value)} isTitleKey={true} />

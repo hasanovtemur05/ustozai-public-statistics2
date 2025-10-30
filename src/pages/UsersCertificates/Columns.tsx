@@ -30,7 +30,7 @@ export const createDataColumns = ({ currentPage, handleShowChart }: IProps): Col
     cell: ({ row }) => <>{row.original?.course?.title} </>,
   },
   {
-    accessorKey: 'user',
+    accessorKey: 'user2',
     header: 'Tel/Email',
     cell: ({ row }) => {
       const user = row.original.user;
@@ -38,7 +38,7 @@ export const createDataColumns = ({ currentPage, handleShowChart }: IProps): Col
     },
   },
   {
-    accessorKey: 'user',
+    accessorKey: 'age',
     header: 'Yosh',
     cell: ({ row }) => {
       const age = calculateAge(row.original.user?.birthday || '');

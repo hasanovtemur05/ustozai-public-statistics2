@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from 'components/ui/button';
-import { HalfCompleteCourse, IUserHalfCompleteCourse } from 'modules/statistic-half-complete-course/types';
+import { HalfCompleteCourse, HalfCompleteCourseV2, IUserHalfCompleteCourse } from 'modules/statistic-half-complete-course/types';
 
 interface IProps {
   getRowData: (user: any) => void;
@@ -40,9 +40,9 @@ export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, cur
       if (!courses?.length) return <>—</>;
       return (
         <ul className="list-disc pl-4">
-          {courses.map((c: HalfCompleteCourse) => (
-            <li key={c.id}>
-              {c.title} ({c.completedLessons}/{c.totalLessons} — {c.completionPercentage}%)
+          {courses.map((c: HalfCompleteCourseV2) => (
+            <li key={c.courseId}>
+              {c.courseTitle} - {c.percentage}%
             </li>
           ))}
         </ul>
@@ -51,7 +51,7 @@ export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, cur
   },
 
   {
-    accessorKey: 'courses',
+    accessorKey: 'details',
     header: 'Batafsil',
     cell: ({ row }) => {
       return <Button onClick={() => handleShowChart(row.original)}>Batafsil </Button>;

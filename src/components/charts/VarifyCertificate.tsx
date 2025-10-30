@@ -8,8 +8,7 @@ import { useVerifyCertificate } from 'modules/user-certificate/hooks/useVerifyCe
 export default function VerifyCertificate({ user, onClose }: { user: IUserCertificate; onClose: () => void }) {
   const { data, isLoading } = useVerifyCertificate(user?.uniqueId ? user?.uniqueId + '' : '');
 
-  console.log(data, 'dta');
-
+ 
   const getDegreeColor = (degree: CertificateDegreeType) => {
     switch (degree) {
       case 'GOLD':

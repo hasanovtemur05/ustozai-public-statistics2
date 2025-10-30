@@ -25,7 +25,13 @@ export const GetDatasList = async (
     search: search?.trim() || undefined,
   };
 
-  return await http.get(`/statistics/users/with/half/complete/course`, {
+  return await http.get(`/agency/users/with/half/complete/course`, {
     params: cleanEmptyStrings(params),
+  });
+};
+
+export const GetUserCourseInfo = async (userId?: string, courseId?: string) => {
+  return await http.get(`/agency/user/course/progress`, {
+    params: { userId, courseId },
   });
 };

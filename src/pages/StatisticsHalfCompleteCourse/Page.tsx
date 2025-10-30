@@ -49,6 +49,8 @@ const UsersHalfComplitedCoursesPage = () => {
     pagenationInfo,
   } = useUserByHalfCourse(currentPage, pageSize, course, region, district, validDate, searchQuery);
 
+ 
+
   const { data: coursesList } = useCoursesList({ isEnabled: !!categories });
 
   // Debounce effect for search
@@ -68,7 +70,7 @@ const UsersHalfComplitedCoursesPage = () => {
   const handleShowChart = (user: IUserHalfCompleteCourse) => {
     if (user) {
       setSearchParams({
-        userId: user.id,
+        userId: user?.userId,
       });
       setSelectedUser(user);
     }
