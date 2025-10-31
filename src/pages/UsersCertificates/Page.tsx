@@ -15,7 +15,7 @@ import { DateRange } from 'react-day-picker';
 import { getDefaultDateRange } from 'utils/defaultDateRange';
 import { DateRangePicker } from 'components/DataRangePicker';
 import CustomPagination from 'components/shared/pagination';
-import { Search } from 'lucide-react';
+import { Search, Download, X } from 'lucide-react';
 import { Input } from 'components/ui/input';
 import { useSearchParams } from 'react-router-dom';
 import VerifyCertificate from 'components/charts/VarifyCertificate';
@@ -44,6 +44,7 @@ const UsersCertificatesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [date, setDate] = useState<DateRange | undefined>(getDefaultDateRange());
+  const [isDownloading, setIsDownloading] = useState(false);
   const validDate = date?.from && date.to ? date : getDefaultDateRange();
 
   const {
@@ -114,6 +115,46 @@ const UsersCertificatesPage = () => {
     setCurrentPage(1);
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setIsDownloading(true);
+
+      const params = new URLSearchParams();
+      params.append('pageNumber', '1');
+      params.append('pageSize', pageSize + '');
+
+      if (course) params.append('courseId', course);
+      if (region) params.append('region', region);
+      if (district) params.append('district', district);
+      if (searchQuery) params.append('search', searchQuery);
+
+      if (validDate?.from) {
+        params.append('startDate', validDate.from.toISOString().split('T')[0]);
+      }
+      if (validDate?.to) {
+        params.append('endDate', validDate.to.toISOString().split('T')[0]);
+      }
+
+      const response = await http.get(`/certificate/users/export/excel?${params.toString()}`, {
+        responseType: 'blob',
+      });
+
+      // Create blob link to download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `certificates_${new Date().getTime()}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-center mb-6">Sertifikat olgan talabalar</h1>
@@ -131,7 +172,7 @@ const UsersCertificatesPage = () => {
 
           <DateRangePicker date={date} setDate={setDate} />
 
-          <div className="relative w-80">
+          <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
@@ -144,10 +185,14 @@ const UsersCertificatesPage = () => {
           {/* Clear filters button */}
           {(searchInput || course || region || district) && (
             <Button onClick={clearFilters} variant={'destructive'}>
-              Tozalash
+              <X />
             </Button>
           )}
         </div>
+        <Button onClick={handleExportExcel} disabled={isDownloading} className="flex items-center gap-2">
+          <Download className="w-4 h-4" />
+          {isDownloading ? 'Yuklanmoqda...' : 'Excel yuklash'}
+        </Button>
       </div>
       {isLoading ? (
         <Loader />

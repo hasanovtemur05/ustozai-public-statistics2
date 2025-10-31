@@ -83,7 +83,7 @@ export interface IExamQuestion {
 export interface IExamSection {
   totalQuestions: number;
   correctAnswers: number;
-  degree: string;
+  degree: CertificateDegreeType;
   questions: IExamQuestion[];
 }
 

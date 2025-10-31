@@ -28,6 +28,9 @@ export interface IUserCertificate {
 
 export type CertificateDegreeType = 'GOLD' | 'SILVER' | 'BRONZE' ;
 export type CertificateDegree = 'GOLD' | 'SILVER' | 'BRONZE' ;
+
+
+
 export interface IVerifyCertificate {
   user: IUser;
   file: string;
