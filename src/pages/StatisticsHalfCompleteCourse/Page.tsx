@@ -7,18 +7,25 @@ import regions from '../../db/regions.json';
 import districtData from '../../db/districts.json';
 import SelectWithoutForm from 'components/fields/SelectWithoutForm';
 import { useUserByHalfCourse } from 'modules/statistic-half-complete-course/hooks/useList';
-import { IUserHalfCompleteCourse } from 'modules/statistic-half-complete-course/types';
+import { IUserHalfCompleteCourse, UserTypeFilter } from 'modules/statistic-half-complete-course/types';
 import { DateRange } from 'react-day-picker';
 import { getDefaultDateRange } from 'utils/defaultDateRange';
 import { DateRangePicker } from 'components/DataRangePicker';
 import { useSearchParams } from 'react-router-dom';
 import UsersProgress from 'components/charts/UsersProgress';
+import UserActivity from 'components/charts/UserActivity';
 import CustomPagination from 'components/shared/pagination';
 import { Input } from 'components/ui/input';
 import { Search } from 'lucide-react';
 import { Button } from 'components/ui/button';
 
 export type CustomSelectType = { name: string; id: string | number; disabled?: boolean; [key: string]: any };
+
+const typeFilterOptions: CustomSelectType[] = [
+  { name: 'Hammasi', id: 'ALL' },
+  { name: 'Kurs bo\'yicha', id: 'COURSE' },
+  { name: 'Faollik bo\'yicha', id: 'ACTIVITY' },
+];
 
 const UsersHalfComplitedCoursesPage = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -30,6 +37,7 @@ const UsersHalfComplitedCoursesPage = () => {
   const [course, setCourse] = useState('');
   const [region, setRegion] = useState('');
   const [district, setDistrict] = useState('');
+  const [typeFilter, setTypeFilter] = useState<UserTypeFilter>('ALL');
   const [districts, setDistricts] = useState<CustomSelectType[]>([]);
   const [courses, setCourses] = useState<CustomSelectType[]>([]);
   const [selectedUser, setSelectedUser] = useState<IUserHalfCompleteCourse>();
@@ -47,7 +55,7 @@ const UsersHalfComplitedCoursesPage = () => {
     data: categories,
     isLoading,
     pagenationInfo,
-  } = useUserByHalfCourse(currentPage, pageSize, course, region, district, validDate, searchQuery);
+  } = useUserByHalfCourse(currentPage, pageSize, typeFilter, course, region, district, validDate, searchQuery);
 
  
 
@@ -117,6 +125,7 @@ const UsersHalfComplitedCoursesPage = () => {
     setCourse('');
     setRegion('');
     setDistrict('');
+    setTypeFilter('ALL');
     setDate(getDefaultDateRange());
     setCurrentPage(1);
   };
@@ -129,6 +138,15 @@ const UsersHalfComplitedCoursesPage = () => {
         {/* Filters */}
         <div className="flex items-center gap-3 flex-wrap">
           <h2 className="text-lg font-semibold">Jami {pagenationInfo?.count || 0} ta</h2>
+          <SelectWithoutForm
+            data={typeFilterOptions}
+            placeholder="Turi bo'yicha..."
+            value={typeFilter}
+            onChange={(value) => {
+              setTypeFilter(value as UserTypeFilter);
+              setCurrentPage(1);
+            }}
+          />
           <SelectWithoutForm
             data={courses}
             placeholder="Kursni bo'yicha..."
@@ -174,7 +192,7 @@ const UsersHalfComplitedCoursesPage = () => {
             />
           </div>
           {/* Clear filters button */}
-          {(searchInput || course || region || district) && (
+          {(searchInput || course || region || district || typeFilter !== 'ALL') && (
             <Button onClick={clearFilters} variant={'destructive'}>
               Tozalash
             </Button>
@@ -203,13 +221,28 @@ const UsersHalfComplitedCoursesPage = () => {
 
       {userId && selectedUser && (
         <div>
-          <UsersProgress
-            user={selectedUser}
-            onClose={() => {
-              setSearchParams({});
-              setSelectedUser(undefined);
-            }}
-          />
+          {/* Show activity details if user has activity, otherwise show course progress */}
+          {selectedUser.activity &&
+           (selectedUser.activity.fortuna > 0 ||
+            selectedUser.activity.portfolio > 0 ||
+            selectedUser.activity.battle > 0) ? (
+            <UserActivity
+              userId={selectedUser.userId}
+              userName={`${selectedUser.firstname} ${selectedUser.lastname}`}
+              onClose={() => {
+                setSearchParams({});
+                setSelectedUser(undefined);
+              }}
+            />
+          ) : (
+            <UsersProgress
+              user={selectedUser}
+              onClose={() => {
+                setSearchParams({});
+                setSelectedUser(undefined);
+              }}
+            />
+          )}
         </div>
       )}
     </div>

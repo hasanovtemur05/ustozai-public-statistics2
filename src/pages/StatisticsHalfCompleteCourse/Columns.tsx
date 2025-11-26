@@ -51,6 +51,25 @@ export const createDataColumns = ({ getRowData, setSheetOpen, setDialogOpen, cur
   },
 
   {
+    accessorKey: 'activity',
+    header: 'Faollik',
+    cell: ({ row }) => {
+      const activity = row.original.activity;
+      if (!activity) return <>—</>;
+      const { fortuna, portfolio, battle } = activity;
+      const hasActivity = fortuna > 0 || portfolio > 0 || battle > 0;
+      if (!hasActivity) return <>—</>;
+      return (
+        <div className="text-sm">
+          {fortuna > 0 && <div>Fortuna: {fortuna}</div>}
+          {portfolio > 0 && <div>Portfolio: {portfolio}</div>}
+          {battle > 0 && <div>Battle: {battle}</div>}
+        </div>
+      );
+    },
+  },
+
+  {
     accessorKey: 'details',
     header: 'Batafsil',
     cell: ({ row }) => {

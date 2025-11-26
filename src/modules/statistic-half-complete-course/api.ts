@@ -1,10 +1,12 @@
 import { DateRange } from 'react-day-picker';
 import http from 'services/api';
 import { cleanEmptyStrings } from 'utils/clearEmptyKeys';
+import { UserTypeFilter } from './types';
 
 export const GetDatasList = async (
   pageNumber: number,
   pageSize: number,
+  type: UserTypeFilter,
   courseId?: string,
   region?: string,
   district?: string,
@@ -15,6 +17,7 @@ export const GetDatasList = async (
   const endDate = date?.to ? date.to?.toISOString() : '';
 
   const params = {
+    type,
     courseId,
     pageNumber,
     pageSize,
@@ -33,5 +36,11 @@ export const GetDatasList = async (
 export const GetUserCourseInfo = async (userId?: string, courseId?: string) => {
   return await http.get(`/agency/user/course/progress`, {
     params: { userId, courseId },
+  });
+};
+
+export const GetUserActivityInfo = async (userId?: string) => {
+  return await http.get(`/agency/user/activity`, {
+    params: { userId },
   });
 };

@@ -4,10 +4,12 @@ import { get } from 'lodash';
 import { getDatasList } from '../adapters';
 import { GetDatasList } from '../api';
 import { DateRange } from 'react-day-picker';
+import { UserTypeFilter } from '../types';
 
 export const useUserByHalfCourse = (
   currentPage: number,
   pageSize: number,
+  type: UserTypeFilter,
   courseId?: string,
   region?: string,
   district?: string,
@@ -19,8 +21,8 @@ export const useUserByHalfCourse = (
     pagenationInfo: null,
   };
   const { data = initialData, ...args } = useQuery({
-    queryKey: ['user_helf_course', currentPage, pageSize, courseId, region, district, date, search],
-    queryFn: () => GetDatasList(currentPage, pageSize, courseId, region, district, date, search),
+    queryKey: ['user_helf_course', currentPage, pageSize, type, courseId, region, district, date, search],
+    queryFn: () => GetDatasList(currentPage, pageSize, type, courseId, region, district, date, search),
     select: (data) => ({
       data: getDatasList(get(data, 'data.data.data')),
       pagenationInfo: get(data, 'data.data.meta.pagination'),

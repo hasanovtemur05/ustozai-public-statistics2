@@ -56,6 +56,12 @@ export interface HalfCompleteCourseV2 {
   percentage: number;
 }
 
+export interface UserActivity {
+  fortuna: number;
+  portfolio: number;
+  battle: number;
+}
+
 export interface IUserHalfCompleteCourse {
   userId: string;
   firstname: string;
@@ -64,6 +70,72 @@ export interface IUserHalfCompleteCourse {
   email: string;
   address: Address;
   courses: HalfCompleteCourseV2[];
+  activity: UserActivity;
+}
+
+export type UserTypeFilter = 'ALL' | 'COURSE' | 'ACTIVITY';
+
+// User Activity Types
+export interface IBattleOpponent {
+  userId: string;
+  firstname: string;
+  lastname: string;
+  photo: string | null;
+}
+
+export interface IBattleGame {
+  gameId: string;
+  courseId: string;
+  courseTitle: string;
+  isWinner: boolean | null;
+  isDraw: boolean | null;
+  isLeft: boolean;
+  correctCount: number | null;
+  createdAt: string;
+  opponent: IBattleOpponent | null;
+}
+
+export interface IBattleActivity {
+  totalGames: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  games: IBattleGame[];
+}
+
+export interface IPortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  photo: string;
+  courseId: string;
+  courseTitle: string;
+  createdAt: string;
+  status: string;
+}
+
+export interface IPortfolioActivity {
+  totalPortfolios: number;
+  portfolios: IPortfolioItem[];
+}
+
+export interface IFortunaHistory {
+  id: string;
+  title: string;
+  photo: string;
+  status: 'DONE' | 'PENDING';
+  createdAt: string;
+}
+
+export interface IFortunaActivity {
+  totalSpins: number;
+  history: IFortunaHistory[];
+}
+
+export interface IUserActivityDetail {
+  battle: IBattleActivity;
+  portfolio: IPortfolioActivity;
+  fortuna: IFortunaActivity;
 }
 
 // Detailed user course information structure

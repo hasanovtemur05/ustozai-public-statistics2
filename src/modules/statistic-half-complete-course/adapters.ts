@@ -16,6 +16,13 @@ export const getData = (item?: IUserHalfCompleteCourse) => {
           percentage: c.percentage,
         }))
       : [],
+    activity: item?.activity
+      ? {
+          fortuna: item.activity.fortuna ?? 0,
+          portfolio: item.activity.portfolio ?? 0,
+          battle: item.activity.battle ?? 0,
+        }
+      : { fortuna: 0, portfolio: 0, battle: 0 },
   };
 };
 
